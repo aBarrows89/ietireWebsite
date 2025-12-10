@@ -1,0 +1,14 @@
+# Robots.txt for Import Export Tire
+# https://www.ietires.com
+
+User-agent: *
+Allow: /
+
+# Sitemap location
+Sitemap: https://www.ietires.com/sitemap.xml
+
+# Disallow admin/API routes
+Disallow: /api/
+Disallow: /admin/
+Disallow: /login/
+Disallow: /change-password/

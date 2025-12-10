@@ -1,0 +1,92 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+html {
+  scroll-behavior: smooth;
+}
+
+body {
+  font-family: 'Inter', system-ui, sans-serif;
+  -webkit-font-smoothing: antialiased;
+  -moz-osx-font-smoothing: grayscale;
+}
+
+/* Custom scrollbar */
+::-webkit-scrollbar {
+  width: 8px;
+}
+
+::-webkit-scrollbar-track {
+  background: #0f172a;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #475569;
+  border-radius: 4px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+/* Animated gradient background */
+.gradient-bg {
+  background: linear-gradient(135deg, #0f172a 0%, #020617 50%, #0f172a 100%);
+  background-size: 400% 400%;
+  animation: gradient-shift 15s ease infinite;
+}
+
+@keyframes gradient-shift {
+  0% { background-position: 0% 50%; }
+  50% { background-position: 100% 50%; }
+  100% { background-position: 0% 50%; }
+}
+
+/* Tire tread pattern */
+.tread-pattern {
+  background-image: repeating-linear-gradient(
+    45deg,
+    transparent,
+    transparent 10px,
+    rgba(255,255,255,0.02) 10px,
+    rgba(255,255,255,0.02) 20px
+  );
+}
+
+/* Glass effect */
+.glass {
+  background: rgba(255, 255, 255, 0.05);
+  backdrop-filter: blur(10px);
+  border: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+/* Red accent glow */
+.red-glow {
+  box-shadow: 0 0 60px rgba(220, 38, 38, 0.3);
+}
+
+/* Custom Tire Cursor - Generic stylized tire (not branded) */
+/* Default cursor - small tire */
+* {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='24' height='24' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%231a1a1a' stroke='%23333' stroke-width='3'/%3E%3Ccircle cx='50' cy='50' r='38' fill='none' stroke='%23444' stroke-width='6' stroke-dasharray='12 6'/%3E%3Ccircle cx='50' cy='50' r='28' fill='%23252525' stroke='%23555' stroke-width='2'/%3E%3Ccircle cx='50' cy='50' r='18' fill='%23666'/%3E%3Ccircle cx='50' cy='50' r='12' fill='%23888'/%3E%3Ccircle cx='50' cy='50' r='6' fill='%23aaa'/%3E%3C/svg%3E") 12 12, auto;
+}
+
+/* Pointer cursor for interactive elements - red accent tire */
+a, button, [role="button"], input[type="submit"], input[type="button"], .cursor-pointer {
+  cursor: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='28' height='28' viewBox='0 0 100 100'%3E%3Ccircle cx='50' cy='50' r='45' fill='%231a1a1a' stroke='%23dc2626' stroke-width='4'/%3E%3Ccircle cx='50' cy='50' r='36' fill='none' stroke='%23555' stroke-width='8' stroke-dasharray='10 5'/%3E%3Ccircle cx='50' cy='50' r='24' fill='%23252525' stroke='%23dc2626' stroke-width='2'/%3E%3Ccircle cx='50' cy='50' r='14' fill='%23444'/%3E%3Ccircle cx='50' cy='50' r='8' fill='%23dc2626'/%3E%3C/svg%3E") 14 14, pointer;
+}
+
+/* Text cursor for inputs */
+input[type="text"], input[type="email"], input[type="tel"], input[type="password"], input[type="search"], textarea, [contenteditable="true"] {
+  cursor: text;
+}
+
+/* Grabbing cursor for drag elements */
+.cursor-grab {
+  cursor: grab;
+}
+
+.cursor-grabbing {
+  cursor: grabbing;
+}
