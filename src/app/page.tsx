@@ -555,9 +555,21 @@ export default function Home() {
               <motion.a
                 initial={{ opacity: 0, scale: 0.9 }}
                 animate={{ opacity: 1, scale: 1 }}
+                transition={{ delay: 0.25 }}
+                href="https://b2b.ietires.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="ml-3 bg-amber-500 hover:bg-amber-400 text-slate-900 px-4 py-2 rounded-lg font-semibold transition-all hover:shadow-lg hover:shadow-amber-500/30 flex items-center gap-2"
+              >
+                <Users size={16} />
+                Dealer Login
+              </motion.a>
+              <motion.a
+                initial={{ opacity: 0, scale: 0.9 }}
+                animate={{ opacity: 1, scale: 1 }}
                 transition={{ delay: 0.3 }}
                 href="tel:724-539-8705"
-                className="ml-4 bg-red-600 hover:bg-red-500 px-5 py-2.5 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-red-500/25 flex items-center gap-2"
+                className="ml-2 bg-red-600 hover:bg-red-500 px-5 py-2.5 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-red-500/25 flex items-center gap-2"
               >
                 <Phone size={16} />
                 <span className="hidden lg:inline">(724) 539-8705</span>
@@ -591,8 +603,17 @@ export default function Home() {
                 </button>
               ))}
               <a
+                href="https://b2b.ietires.com"
+                target="_blank"
+                rel="noopener noreferrer"
+                className="flex items-center justify-center gap-2 bg-amber-500 text-slate-900 py-3 rounded-lg font-semibold mt-3"
+              >
+                <Users size={18} />
+                Dealer Login
+              </a>
+              <a
                 href="tel:724-539-8705"
-                className="block bg-red-600 text-center py-3 rounded-lg font-medium mt-3"
+                className="block bg-red-600 text-center py-3 rounded-lg font-medium mt-2"
               >
                 Call (724) 539-8705
               </a>
@@ -670,18 +691,19 @@ export default function Home() {
             <circle cx="50" cy="50" r="45" fill="none" stroke="white" strokeWidth="12" />
             <circle cx="50" cy="50" r="28" fill="none" stroke="white" strokeWidth="2" />
             <circle cx="50" cy="50" r="15" fill="none" stroke="white" strokeWidth="4" />
-            {/* Tread marks */}
-            {[0, 30, 60, 90, 120, 150, 180, 210, 240, 270, 300, 330].map((angle) => (
-              <line
-                key={angle}
-                x1={50 + 38 * Math.cos((angle * Math.PI) / 180)}
-                y1={50 + 38 * Math.sin((angle * Math.PI) / 180)}
-                x2={50 + 45 * Math.cos((angle * Math.PI) / 180)}
-                y2={50 + 45 * Math.sin((angle * Math.PI) / 180)}
-                stroke="white"
-                strokeWidth="3"
-              />
-            ))}
+            {/* Tread marks - pre-calculated to avoid hydration mismatch */}
+            <line x1="88" y1="50" x2="95" y2="50" stroke="white" strokeWidth="3" />
+            <line x1="83" y1="69" x2="89" y2="72.5" stroke="white" strokeWidth="3" />
+            <line x1="69" y1="83" x2="72.5" y2="89" stroke="white" strokeWidth="3" />
+            <line x1="50" y1="88" x2="50" y2="95" stroke="white" strokeWidth="3" />
+            <line x1="31" y1="83" x2="27.5" y2="89" stroke="white" strokeWidth="3" />
+            <line x1="17" y1="69" x2="11" y2="72.5" stroke="white" strokeWidth="3" />
+            <line x1="12" y1="50" x2="5" y2="50" stroke="white" strokeWidth="3" />
+            <line x1="17" y1="31" x2="11" y2="27.5" stroke="white" strokeWidth="3" />
+            <line x1="31" y1="17" x2="27.5" y2="11" stroke="white" strokeWidth="3" />
+            <line x1="50" y1="12" x2="50" y2="5" stroke="white" strokeWidth="3" />
+            <line x1="69" y1="17" x2="72.5" y2="11" stroke="white" strokeWidth="3" />
+            <line x1="83" y1="31" x2="89" y2="27.5" stroke="white" strokeWidth="3" />
           </svg>
         </motion.div>
 
@@ -1019,11 +1041,11 @@ export default function Home() {
                 style={{ transformStyle: "preserve-3d" }}
               >
                 <div className="flex flex-col items-center gap-3">
-                  <div className="h-12 w-full flex items-center justify-center px-2">
+                  <div className="h-14 w-full flex items-center justify-center px-3 bg-white/90 rounded-lg">
                     <img
                       src={brand.logo}
                       alt={brand.name}
-                      className="max-h-12 w-auto object-contain brightness-0 invert opacity-80 group-hover:opacity-100 transition-opacity"
+                      className="max-h-10 w-auto object-contain"
                     />
                   </div>
                   <span className={`text-xs uppercase tracking-wider px-2 py-1 rounded-full ${
