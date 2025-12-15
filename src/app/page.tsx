@@ -559,21 +559,10 @@ export default function Home() {
                 href="https://b2b.ietires.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="ml-3 bg-amber-500 hover:bg-amber-400 text-slate-900 px-4 py-2 rounded-lg font-semibold transition-all hover:shadow-lg hover:shadow-amber-500/30 flex items-center gap-2"
+                className="ml-3 bg-red-600 hover:bg-red-500 text-white px-6 py-2.5 rounded-lg font-semibold transition-all hover:shadow-lg hover:shadow-red-500/30 flex items-center gap-2"
               >
-                <Users size={16} />
+                <Users size={18} />
                 Dealer Login
-              </motion.a>
-              <motion.a
-                initial={{ opacity: 0, scale: 0.9 }}
-                animate={{ opacity: 1, scale: 1 }}
-                transition={{ delay: 0.3 }}
-                href="tel:724-539-8705"
-                className="ml-2 bg-red-600 hover:bg-red-500 px-5 py-2.5 rounded-lg font-medium transition-all hover:shadow-lg hover:shadow-red-500/25 flex items-center gap-2"
-              >
-                <Phone size={16} />
-                <span className="hidden lg:inline">(724) 539-8705</span>
-                <span className="lg:hidden">Call</span>
               </motion.a>
             </div>
 
@@ -606,16 +595,10 @@ export default function Home() {
                 href="https://b2b.ietires.com"
                 target="_blank"
                 rel="noopener noreferrer"
-                className="flex items-center justify-center gap-2 bg-amber-500 text-slate-900 py-3 rounded-lg font-semibold mt-3"
+                className="flex items-center justify-center gap-2 bg-red-600 text-white py-3 rounded-lg font-semibold mt-3"
               >
                 <Users size={18} />
                 Dealer Login
-              </a>
-              <a
-                href="tel:724-539-8705"
-                className="block bg-red-600 text-center py-3 rounded-lg font-medium mt-2"
-              >
-                Call (724) 539-8705
               </a>
             </div>
           </motion.div>
