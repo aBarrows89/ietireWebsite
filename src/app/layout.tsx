@@ -97,7 +97,7 @@ const jsonLd = {
   address: [
     {
       "@type": "PostalAddress",
-      streetAddress: "100 Pleasant Unity Rd",
+      streetAddress: "410 Unity Street",
       addressLocality: "Latrobe",
       addressRegion: "PA",
       postalCode: "15650",
@@ -105,7 +105,7 @@ const jsonLd = {
     },
     {
       "@type": "PostalAddress",
-      streetAddress: "20 Matthew Dr",
+      streetAddress: "350 Pittsburgh Street",
       addressLocality: "Uniontown",
       addressRegion: "PA",
       postalCode: "15401",

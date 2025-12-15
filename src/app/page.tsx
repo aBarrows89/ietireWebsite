@@ -520,7 +520,11 @@ export default function Home() {
   return (
     <div ref={containerRef} className="min-h-screen bg-slate-950 overflow-x-hidden" style={{ perspective: "1000px" }}>
       {/* Navigation */}
-      <nav className="fixed top-0 left-0 right-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/50">
+      <nav
+        className="fixed top-0 left-0 right-0 z-50 bg-slate-950/90 backdrop-blur-md border-b border-slate-800/50"
+        role="navigation"
+        aria-label="Main navigation"
+      >
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex items-center justify-between h-16">
             <motion.div
@@ -567,8 +571,10 @@ export default function Home() {
             </div>
 
             <button
-              className="md:hidden text-white p-2"
+              className="md:hidden text-white p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
               onClick={() => setMobileMenuOpen(!mobileMenuOpen)}
+              aria-label={mobileMenuOpen ? "Close menu" : "Open menu"}
+              aria-expanded={mobileMenuOpen}
             >
               {mobileMenuOpen ? <X size={24} /> : <Menu size={24} />}
             </button>
@@ -605,8 +611,10 @@ export default function Home() {
         )}
       </nav>
 
+      {/* Main Content */}
+      <main>
       {/* Hero Section with Enhanced 3D Parallax */}
-      <section className="relative min-h-screen flex items-center pt-16 overflow-hidden">
+      <section className="relative min-h-screen flex items-center pt-16 overflow-hidden" aria-label="Hero">
         {/* Animated background layers */}
         <motion.div
           style={{ y: bgLayerY }}
@@ -1755,8 +1763,10 @@ export default function Home() {
         </div>
       </section>
 
+      </main>
+
       {/* Footer */}
-      <footer className="py-12 border-t border-slate-800">
+      <footer className="py-12 border-t border-slate-800" role="contentinfo">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div className="flex flex-col lg:flex-row items-center justify-between gap-6">
             <div className="flex items-center gap-3">
@@ -1774,10 +1784,18 @@ export default function Home() {
               &copy; {new Date().getFullYear()} Import Export Tire. All rights reserved.
             </div>
             <div className="flex items-center gap-4">
-              <a href="tel:724-539-8705" className="text-slate-400 hover:text-white transition-colors p-2">
+              <a
+                href="tel:724-539-8705"
+                className="text-slate-400 hover:text-white transition-colors p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Call us at 724-539-8705"
+              >
                 <Phone size={20} />
               </a>
-              <a href="mailto:info@ietires.com" className="text-slate-400 hover:text-white transition-colors p-2">
+              <a
+                href="mailto:info@ietires.com"
+                className="text-slate-400 hover:text-white transition-colors p-2 min-h-[44px] min-w-[44px] flex items-center justify-center"
+                aria-label="Email us at info@ietires.com"
+              >
                 <Mail size={20} />
               </a>
             </div>
@@ -1793,9 +1811,10 @@ export default function Home() {
             animate={{ opacity: 1, scale: 1, y: 0 }}
             exit={{ opacity: 0, scale: 0, y: 20 }}
             onClick={scrollToTop}
-            className="fixed bottom-8 right-8 z-50 group"
+            className="fixed bottom-8 right-8 z-50 group min-h-[44px] min-w-[44px]"
             whileHover={{ scale: 1.1 }}
             whileTap={{ scale: 0.95 }}
+            aria-label="Return to top of page"
           >
             <div className="relative">
               {/* Tire spins on hover */}
