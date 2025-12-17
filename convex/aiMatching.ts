@@ -131,39 +131,64 @@ Return JSON in this exact format (no other text, just JSON):
 }
 
 === CANDIDATE ANALYSIS INSTRUCTIONS ===
-You MUST populate the candidateAnalysis section with detailed analysis:
+You MUST populate the candidateAnalysis section with detailed analysis. BE HARSH AND CRITICAL - we want to filter out bad candidates early.
 
 1. EMPLOYMENT HISTORY: Extract ALL jobs from the resume with:
    - Company name, job title, duration (estimate if only years given)
    - Calculate durationMonths for each position
+   - LOOK FOR PATTERNS of instability, not just individual red flags
 
-2. RED FLAGS to detect (be specific and honest):
-   - "job_hopping": 3+ jobs in 2 years, or pattern of leaving before 1 year
-   - "employment_gap": Gaps of 6+ months between jobs
-   - "short_tenure": Multiple positions under 12 months
-   - "inconsistency": Conflicting dates, unexplained career changes
-   - "no_experience": Applying for role with zero relevant background
-   - "overqualified": Senior manager applying for entry-level (flight risk)
+2. RED FLAGS to detect (BE AGGRESSIVE - flag anything concerning):
+   - "job_hopping": 2+ jobs in 18 months, ANY pattern of leaving before 1 year, or 4+ jobs in 3 years = HIGH severity
+   - "employment_gap": ANY unexplained gap of 3+ months = MEDIUM, 6+ months = HIGH severity
+   - "short_tenure": Even ONE position under 6 months is a red flag (unless internship/contract stated)
+   - "inconsistency": Vague dates (just years, no months), unexplained career changes, lateral moves without growth
+   - "no_experience": Limited relevant background for the role they're applying to
+   - "overqualified": Anyone applying significantly below their experience level is a flight risk
 
-3. GREEN FLAGS to highlight:
-   - "long_tenure": 3+ years at any single employer
-   - "promotion": Internal promotions show growth
-   - "relevant_experience": Direct experience in our industry
-   - "certifications": Forklift cert, CDL, IT certs, etc.
-   - "leadership": Team lead, supervisor, management experience
+   ADDITIONAL RED FLAGS TO CHECK:
+   - Multiple terminations or "left for better opportunity" patterns
+   - Downward career trajectory (going from manager to individual contributor)
+   - Jobs in completely unrelated industries without explanation
+   - Resumes with ONLY years listed (hiding short tenures)
+   - Too many "contract" or "temp" positions without permanent roles
+   - Gaps disguised as "self-employed" or "consulting" without specifics
+   - Education dates that don't align with work history
+   - No references or recommendations mentioned
+   - Resume lacking specific accomplishments (just job duties listed)
 
-4. SCORING:
+3. GREEN FLAGS to highlight (BE SELECTIVE - only flag truly impressive things):
+   - "long_tenure": 4+ years at any single employer (3 years is just average, not impressive)
+   - "promotion": ONLY internal promotions within same company (external "promotions" don't count)
+   - "relevant_experience": Direct experience in warehouse, distribution, logistics, or tire industry
+   - "certifications": Forklift cert, CDL, OSHA, IT certs - ONLY if current/valid
+   - "leadership": Actual management with direct reports, not just "team lead" titles
+
+4. SCORING - BE STRICT:
    - overallScore: Weighted combination (40% experience, 40% stability, 20% skills fit)
-   - stabilityScore: Based on average tenure and job hopping patterns
+   - stabilityScore:
+     * Average tenure < 12 months = cap at 40
+     * Average tenure 12-18 months = cap at 60
+     * Average tenure 18-24 months = cap at 75
+     * Average tenure 24+ months = can score 75-100
+     * ANY job under 6 months = deduct 15 points
+     * ANY unexplained gap = deduct 10 points per gap
    - experienceScore: How relevant is their background to warehouse/logistics
+     * Direct warehouse/distribution = 70-100
+     * Manufacturing/shipping = 50-70
+     * Retail/food service = 30-50
+     * Unrelated fields = 10-30
 
-5. RECOMMENDED ACTION:
-   - "strong_candidate": 80+ overall, no major red flags
-   - "worth_interviewing": 60-79 overall, minor concerns
-   - "review_carefully": 40-59 overall, significant concerns to discuss
-   - "likely_pass": Under 40, or major red flags
+5. RECOMMENDED ACTION - BE CONSERVATIVE:
+   - "strong_candidate": 85+ overall, ZERO medium/high red flags, at least 2 green flags
+   - "worth_interviewing": 70-84 overall, max 1 medium red flag, no high severity flags
+   - "review_carefully": 50-69 overall, OR any high severity red flag
+   - "likely_pass": Under 50, OR 2+ high severity red flags, OR clear job hopping pattern
 
-6. HIRING TEAM NOTES: Write 2-3 sentences specifically for the hiring manager about this candidate's strengths, concerns, and suggested interview questions.
+6. HIRING TEAM NOTES: Write 2-3 sentences specifically for the hiring manager. Be DIRECT about concerns - don't sugarcoat. Include:
+   - Primary concern about this candidate (be specific)
+   - What to probe in the interview if they advance
+   - Whether their resume matches the role they're applying for
 
 CRITICAL RULES - YOU MUST FOLLOW THESE:
 1. ONLY use information that is EXPLICITLY written in the resume above

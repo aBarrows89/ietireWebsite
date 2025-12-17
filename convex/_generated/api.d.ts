@@ -10,6 +10,7 @@
 
 import type * as aiMatching from "../aiMatching.js";
 import type * as applications from "../applications.js";
+import type * as auth from "../auth.js";
 import type * as jobs from "../jobs.js";
 
 import type {
@@ -21,6 +22,7 @@ import type {
 declare const fullApi: ApiFromModules<{
   aiMatching: typeof aiMatching;
   applications: typeof applications;
+  auth: typeof auth;
   jobs: typeof jobs;
 }>;
 

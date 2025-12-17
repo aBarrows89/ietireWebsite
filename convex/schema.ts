@@ -2,6 +2,120 @@ import { defineSchema, defineTable } from "convex/server";
 import { v } from "convex/values";
 
 export default defineSchema({
+  // ============ AUTHENTICATION ============
+  users: defineTable({
+    email: v.string(),
+    passwordHash: v.string(),
+    name: v.string(),
+    role: v.string(), // "admin" | "member" | "viewer"
+    isActive: v.boolean(),
+    forcePasswordChange: v.boolean(),
+    createdAt: v.number(),
+    lastLoginAt: v.optional(v.number()),
+  }).index("by_email", ["email"]),
+
+  // ============ PROJECT MANAGEMENT ============
+  projects: defineTable({
+    name: v.string(),
+    description: v.string(),
+    status: v.string(), // "backlog" | "in_progress" | "review" | "done"
+    priority: v.string(), // "low" | "medium" | "high" | "urgent"
+    createdBy: v.id("users"),
+    assignedTo: v.optional(v.id("users")),
+    estimatedHours: v.optional(v.number()),
+    actualHours: v.optional(v.number()),
+    dueDate: v.optional(v.string()),
+    aiGeneratedSteps: v.optional(v.string()), // JSON stringified array
+    aiTimelineAnalysis: v.optional(
+      v.object({
+        estimatedCompletion: v.string(),
+        isOnSchedule: v.boolean(),
+        behindByDays: v.optional(v.number()),
+        confidence: v.number(),
+        reasoning: v.string(),
+      })
+    ),
+    repositoryId: v.optional(v.id("repositories")),
+    createdAt: v.number(),
+    updatedAt: v.number(),
+  })
+    .index("by_status", ["status"])
+    .index("by_assignee", ["assignedTo"])
+    .index("by_created", ["createdAt"]),
+
+  tasks: defineTable({
+    projectId: v.id("projects"),
+    title: v.string(),
+    description: v.optional(v.string()),
+    status: v.string(), // "todo" | "in_progress" | "done"
+    order: v.number(),
+    estimatedMinutes: v.optional(v.number()),
+    actualMinutes: v.optional(v.number()),
+    assignedTo: v.optional(v.id("users")),
+    dueDate: v.optional(v.string()),
+    createdAt: v.number(),
+    completedAt: v.optional(v.number()),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_status", ["status"]),
+
+  // ============ GITHUB REPOSITORIES ============
+  repositories: defineTable({
+    githubId: v.number(),
+    name: v.string(),
+    fullName: v.string(),
+    description: v.optional(v.string()),
+    htmlUrl: v.string(),
+    cloneUrl: v.string(),
+    defaultBranch: v.string(),
+    isPrivate: v.boolean(),
+    language: v.optional(v.string()),
+    starCount: v.number(),
+    forkCount: v.number(),
+    openIssuesCount: v.number(),
+    lastPushedAt: v.string(),
+    lastSyncedAt: v.number(),
+  })
+    .index("by_github_id", ["githubId"])
+    .index("by_name", ["name"]),
+
+  // ============ MESSAGING ============
+  conversations: defineTable({
+    type: v.string(), // "direct" | "project"
+    projectId: v.optional(v.id("projects")),
+    participants: v.array(v.id("users")),
+    lastMessageAt: v.number(),
+    createdAt: v.number(),
+  })
+    .index("by_project", ["projectId"])
+    .index("by_last_message", ["lastMessageAt"]),
+
+  messages: defineTable({
+    conversationId: v.id("conversations"),
+    senderId: v.id("users"),
+    content: v.string(),
+    mentions: v.array(v.id("users")),
+    readBy: v.array(v.id("users")),
+    createdAt: v.number(),
+  })
+    .index("by_conversation", ["conversationId"])
+    .index("by_created", ["createdAt"]),
+
+  // ============ AUDIT LOG ============
+  auditLogs: defineTable({
+    action: v.string(),
+    actionType: v.string(),
+    resourceType: v.string(),
+    resourceId: v.string(),
+    userId: v.id("users"),
+    userEmail: v.string(),
+    details: v.string(),
+    timestamp: v.number(),
+  })
+    .index("by_timestamp", ["timestamp"])
+    .index("by_user", ["userId"]),
+
+  // ============ JOBS & APPLICATIONS (IE Tire Careers) ============
   // Jobs table - positions available at IE Tire
   jobs: defineTable({
     title: v.string(),

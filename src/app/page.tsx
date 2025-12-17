@@ -238,6 +238,7 @@ function Card3D({ children, className = "" }: { children: React.ReactNode; class
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeJob, setActiveJob] = useState<string | null>(null);
+  const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
   const [showReturnToTop, setShowReturnToTop] = useState(false);
 
   // Track scroll position for return to top button
@@ -357,13 +358,34 @@ export default function Home() {
   // Stats section parallax
   const statsSectionY = useTransform(smoothProgress, [0.2, 0.5], [100, 0]);
 
-  const scrollToSection = (id: string) => {
+  const scrollToSection = (id: string, center: boolean = false) => {
     const element = document.getElementById(id);
     if (element) {
-      element.scrollIntoView({ behavior: "smooth" });
+      if (center) {
+        // Scroll to center the element on screen
+        const elementRect = element.getBoundingClientRect();
+        const absoluteElementTop = elementRect.top + window.pageYOffset;
+        const middle = absoluteElementTop - (window.innerHeight / 2) + (elementRect.height / 4);
+        window.scrollTo({
+          top: middle,
+          behavior: "smooth"
+        });
+      } else {
+        element.scrollIntoView({ behavior: "smooth" });
+      }
     }
     setMobileMenuOpen(false);
   };
+
+  // Handle hash on initial load (for /careers redirect)
+  useEffect(() => {
+    if (typeof window !== "undefined" && window.location.hash) {
+      const hash = window.location.hash.substring(1);
+      setTimeout(() => {
+        scrollToSection(hash, true);
+      }, 300);
+    }
+  }, []);
 
   // Extract text from uploaded file
   const extractTextFromFile = async (file: File): Promise<string> => {
@@ -509,6 +531,19 @@ export default function Home() {
       });
 
       setSubmitSuccess(true);
+      // Scroll to the careers section header (which contains the success message)
+      setTimeout(() => {
+        const careersSection = document.getElementById("careers");
+        if (careersSection) {
+          const elementRect = careersSection.getBoundingClientRect();
+          const absoluteElementTop = elementRect.top + window.pageYOffset;
+          const middle = absoluteElementTop - 100; // 100px from top of viewport
+          window.scrollTo({
+            top: middle,
+            behavior: "smooth"
+          });
+        }
+      }, 100);
     } catch (error) {
       console.error("Error submitting application:", error);
       setSubmitError("Failed to submit application. Please try again.");
@@ -1155,6 +1190,7 @@ export default function Home() {
           {/* Success Message */}
           {submitSuccess && (
             <motion.div
+              id="application-success"
               initial={{ opacity: 0, y: -20 }}
               animate={{ opacity: 1, y: 0 }}
               className="max-w-2xl mx-auto mb-8"
@@ -1469,39 +1505,144 @@ export default function Home() {
               <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
                 {(convexJobs || jobs)
                   .filter((job: any) => !activeJob || activeJob === null || job.department === activeJob)
-                  .map((job: any, i: number) => (
-                  <motion.div
-                    key={job._id || job.id}
-                    initial={{ opacity: 0, y: 20 }}
-                    whileInView={{ opacity: 1, y: 0 }}
-                    viewport={{ once: true }}
-                    transition={{ delay: i * 0.05 }}
-                    className="relative bg-slate-800/30 border border-slate-800 hover:border-slate-700 rounded-xl p-5 transition-all hover:scale-[1.02] overflow-hidden"
-                  >
-                    {/* Status Ribbon */}
-                    <div className={`absolute top-3 right-3 px-2 py-1 rounded text-xs font-semibold ${
-                      job.status === 'accepting'
-                        ? 'bg-green-500/20 text-green-400 border border-green-500/30'
-                        : job.status === 'open'
-                          ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                          : 'bg-slate-500/20 text-slate-400 border border-slate-500/30'
-                    }`}>
-                      {job.status === 'accepting' ? 'Accepting Applications' : job.status === 'open' ? 'Open Position' : 'Closed'}
-                    </div>
+                  .map((job: any, i: number) => {
+                    const jobId = job._id || job.id || `job-${i}`;
+                    const isExpanded = expandedJobId === jobId;
+                    const effectiveBadgeType = job.badgeType || (job.urgentHiring ? 'urgently_hiring' : 'open_position');
 
-                    <h4 className="font-semibold text-white mb-2 pr-28">{job.title}</h4>
-                    <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-3">
-                      <span className="flex items-center gap-1">
-                        <MapPin size={12} />
-                        {job.location}
-                      </span>
-                      <span className="bg-slate-700/50 px-2 py-0.5 rounded text-slate-400">
-                        {job.department}
-                      </span>
-                    </div>
-                    <p className="text-slate-400 text-sm line-clamp-2">{job.description}</p>
-                  </motion.div>
-                ))}
+                    // Generate JobPosting structured data
+                    const jobPostingSchema = {
+                      "@context": "https://schema.org",
+                      "@type": "JobPosting",
+                      "title": job.title,
+                      "description": job.description,
+                      "datePosted": job.createdAt ? new Date(job.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
+                      "hiringOrganization": {
+                        "@type": "Organization",
+                        "name": "IE Tire",
+                        "sameAs": "https://www.ietires.com",
+                        "logo": "https://www.ietires.com/logo.png"
+                      },
+                      "jobLocation": {
+                        "@type": "Place",
+                        "address": {
+                          "@type": "PostalAddress",
+                          "addressLocality": job.location?.split(',')[0]?.trim() || "Latrobe",
+                          "addressRegion": job.location?.split(',')[1]?.trim() || "PA",
+                          "addressCountry": "US"
+                        }
+                      },
+                      "employmentType": job.type === "Full-time" ? "FULL_TIME" : job.type === "Part-time" ? "PART_TIME" : "FULL_TIME",
+                      "industry": "Wholesale Tire Distribution",
+                      "occupationalCategory": job.department || "Operations"
+                    };
+
+                    return (
+                      <motion.div
+                        key={jobId}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.05 }}
+                        layout
+                        className="relative bg-slate-800/30 border border-slate-800 hover:border-slate-700 rounded-xl p-5 transition-all overflow-hidden cursor-pointer"
+                        onClick={() => setExpandedJobId(isExpanded ? null : jobId)}
+                      >
+                        {/* JSON-LD Structured Data */}
+                        <script
+                          type="application/ld+json"
+                          dangerouslySetInnerHTML={{ __html: JSON.stringify(jobPostingSchema) }}
+                        />
+
+                        {/* Status Ribbon - supports both badgeType and legacy urgentHiring field */}
+                        <div className={`absolute top-3 right-3 px-2 py-1 rounded text-xs font-semibold ${
+                          effectiveBadgeType === 'urgently_hiring'
+                            ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                            : effectiveBadgeType === 'accepting_applications'
+                              ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                              : 'bg-green-500/20 text-green-400 border border-green-500/30'
+                        }`}>
+                          {effectiveBadgeType === 'urgently_hiring' ? 'Urgently Hiring' : effectiveBadgeType === 'accepting_applications' ? 'Accepting Applications' : 'Open Position'}
+                        </div>
+
+                        <div className="flex items-start justify-between">
+                          <h4 className="font-semibold text-white mb-2 pr-28">{job.title}</h4>
+                        </div>
+                        <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-3">
+                          <span className="flex items-center gap-1">
+                            <MapPin size={12} />
+                            {job.location}
+                          </span>
+                          <span className="bg-slate-700/50 px-2 py-0.5 rounded text-slate-400">
+                            {job.department}
+                          </span>
+                          <span className="bg-slate-700/50 px-2 py-0.5 rounded text-slate-400">
+                            {job.type}
+                          </span>
+                        </div>
+                        <p className={`text-slate-400 text-sm ${isExpanded ? '' : 'line-clamp-2'}`}>{job.description}</p>
+
+                        {/* Expandable Details */}
+                        <AnimatePresence>
+                          {isExpanded && (
+                            <motion.div
+                              initial={{ opacity: 0, height: 0 }}
+                              animate={{ opacity: 1, height: "auto" }}
+                              exit={{ opacity: 0, height: 0 }}
+                              transition={{ duration: 0.2 }}
+                              className="overflow-hidden"
+                            >
+                              {/* Benefits */}
+                              {job.benefits && job.benefits.length > 0 && (
+                                <div className="mt-4 pt-4 border-t border-slate-700/50">
+                                  <h5 className="text-sm font-medium text-white mb-2">Benefits</h5>
+                                  <ul className="space-y-1">
+                                    {job.benefits.map((benefit: string, idx: number) => (
+                                      <li key={idx} className="text-slate-400 text-sm flex items-center gap-2">
+                                        <CheckCircle2 size={14} className="text-green-400 flex-shrink-0" />
+                                        {benefit}
+                                      </li>
+                                    ))}
+                                  </ul>
+                                </div>
+                              )}
+
+                              {/* Keywords/Skills */}
+                              {job.keywords && job.keywords.length > 0 && (
+                                <div className="mt-4">
+                                  <h5 className="text-sm font-medium text-white mb-2">Skills & Keywords</h5>
+                                  <div className="flex flex-wrap gap-2">
+                                    {job.keywords.map((keyword: string, idx: number) => (
+                                      <span key={idx} className="bg-slate-700/70 px-2 py-1 rounded text-xs text-slate-300">
+                                        {keyword}
+                                      </span>
+                                    ))}
+                                  </div>
+                                </div>
+                              )}
+
+                              {/* Apply CTA */}
+                              <div className="mt-4 pt-4 border-t border-slate-700/50">
+                                <p className="text-slate-400 text-sm">
+                                  Interested? Upload your resume above to apply!
+                                </p>
+                              </div>
+                            </motion.div>
+                          )}
+                        </AnimatePresence>
+
+                        {/* Expand/Collapse Indicator */}
+                        <div className="flex items-center justify-center mt-3">
+                          <motion.div
+                            animate={{ rotate: isExpanded ? 180 : 0 }}
+                            transition={{ duration: 0.2 }}
+                          >
+                            <ChevronDown size={16} className="text-slate-500" />
+                          </motion.div>
+                        </div>
+                      </motion.div>
+                    );
+                  })}
               </div>
 
               <p className="text-center text-slate-500 mt-6">
