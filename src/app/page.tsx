@@ -672,14 +672,14 @@ export default function Home() {
           className="absolute bottom-40 left-10 w-96 h-96 bg-blue-500/5 rounded-full blur-[120px]"
         />
 
-        {/* ENHANCED: Floating tire silhouettes at different depths */}
+        {/* ENHANCED: Floating tire silhouettes at different depths - hidden on mobile for performance */}
         {/* Far background tire - very slow parallax */}
         <motion.div
           style={{
             y: tire1Y,
             rotate: tire1Rotate,
           }}
-          className="absolute -top-20 -right-40 w-[600px] h-[600px] opacity-[0.03]"
+          className="hidden md:block absolute -top-20 -right-40 w-[600px] h-[600px] opacity-[0.03]"
         >
           <svg viewBox="0 0 100 100" className="w-full h-full">
             <circle cx="50" cy="50" r="45" fill="none" stroke="white" strokeWidth="8" />
@@ -695,7 +695,7 @@ export default function Home() {
             x: tire2X,
             rotate: tire2Rotate,
           }}
-          className="absolute top-1/3 -left-32 w-[400px] h-[400px] opacity-[0.04]"
+          className="hidden md:block absolute top-1/3 -left-32 w-[400px] h-[400px] opacity-[0.04]"
         >
           <svg viewBox="0 0 100 100" className="w-full h-full">
             <circle cx="50" cy="50" r="45" fill="none" stroke="white" strokeWidth="10" />
@@ -711,7 +711,7 @@ export default function Home() {
             rotate: tire3Rotate,
             scale: tire3Scale,
           }}
-          className="absolute -bottom-40 right-1/4 w-[300px] h-[300px] opacity-[0.06]"
+          className="hidden md:block absolute -bottom-40 right-1/4 w-[300px] h-[300px] opacity-[0.06]"
         >
           <svg viewBox="0 0 100 100" className="w-full h-full">
             <circle cx="50" cy="50" r="45" fill="none" stroke="white" strokeWidth="12" />
@@ -740,7 +740,7 @@ export default function Home() {
             x: tire4X,
             rotate: tire4Rotate,
           }}
-          className="absolute top-1/4 right-20 w-[150px] h-[150px] opacity-[0.08]"
+          className="hidden md:block absolute top-1/4 right-20 w-[150px] h-[150px] opacity-[0.08]"
         >
           <svg viewBox="0 0 100 100" className="w-full h-full">
             <circle cx="50" cy="50" r="42" fill="none" stroke="#ef4444" strokeWidth="8" />
@@ -771,7 +771,7 @@ export default function Home() {
                   Wholesale Tire Distribution
                 </div>
 
-                <h1 className="text-4xl sm:text-5xl lg:text-6xl font-bold text-white leading-tight mb-6">
+                <h1 className="text-3xl sm:text-4xl md:text-5xl lg:text-6xl font-bold text-white leading-tight mb-4 sm:mb-6">
                   Western PA&apos;s Trusted
                   <motion.span
                     className="block text-transparent bg-clip-text bg-gradient-to-r from-red-400 to-red-600"
@@ -785,7 +785,7 @@ export default function Home() {
                 </h1>
 
                 <motion.p
-                  className="text-lg text-slate-400 mb-8 max-w-lg"
+                  className="text-base sm:text-lg text-slate-400 mb-6 sm:mb-8 max-w-lg"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.4 }}
@@ -796,21 +796,21 @@ export default function Home() {
                 </motion.p>
 
                 <motion.div
-                  className="flex flex-col sm:flex-row gap-4"
+                  className="flex flex-col sm:flex-row gap-3 sm:gap-4"
                   initial={{ opacity: 0, y: 20 }}
                   animate={{ opacity: 1, y: 0 }}
                   transition={{ delay: 0.5 }}
                 >
                   <button
                     onClick={() => scrollToSection("contact")}
-                    className="bg-red-600 hover:bg-red-500 px-8 py-4 rounded-xl font-semibold text-lg transition-all hover:shadow-lg hover:shadow-red-500/25 hover:scale-105 flex items-center justify-center gap-2 group"
+                    className="bg-red-600 hover:bg-red-500 px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-base sm:text-lg transition-all hover:shadow-lg hover:shadow-red-500/25 hover:scale-105 flex items-center justify-center gap-2 group min-h-[48px]"
                   >
                     Open Wholesale Account
                     <ChevronRight size={20} className="group-hover:translate-x-1 transition-transform" />
                   </button>
                   <button
                     onClick={() => scrollToSection("brands")}
-                    className="px-8 py-4 rounded-xl font-semibold text-lg border border-slate-700 hover:border-slate-600 hover:bg-slate-800/50 transition-all flex items-center justify-center gap-2"
+                    className="px-6 sm:px-8 py-3.5 sm:py-4 rounded-xl font-semibold text-base sm:text-lg border border-slate-700 hover:border-slate-600 hover:bg-slate-800/50 transition-all flex items-center justify-center gap-2 min-h-[48px]"
                   >
                     View Brands
                   </button>
@@ -818,7 +818,7 @@ export default function Home() {
 
                 {/* Trust indicators */}
                 <motion.div
-                  className="flex flex-wrap items-center gap-6 mt-10 pt-10 border-t border-slate-800"
+                  className="flex flex-wrap items-center gap-4 sm:gap-6 mt-8 sm:mt-10 pt-6 sm:pt-10 border-t border-slate-800"
                   initial={{ opacity: 0 }}
                   animate={{ opacity: 1 }}
                   transition={{ delay: 0.7 }}
@@ -835,8 +835,8 @@ export default function Home() {
                       animate={{ opacity: 1, x: 0 }}
                       transition={{ delay: 0.8 + i * 0.1 }}
                     >
-                      <CheckCircle2 size={20} className="text-green-500" />
-                      <span className="text-slate-400 text-sm">{text}</span>
+                      <CheckCircle2 size={18} className="text-green-500 shrink-0" />
+                      <span className="text-slate-400 text-xs sm:text-sm">{text}</span>
                     </motion.div>
                   ))}
                 </motion.div>
@@ -853,10 +853,10 @@ export default function Home() {
                   initial={{ opacity: 0, scale: 0.9, rotateY: -10 }}
                   animate={{ opacity: 1, scale: 1, rotateY: 0 }}
                   transition={{ duration: 0.8, delay: 0.2 }}
-                  className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm rounded-3xl p-8 lg:p-10 border border-slate-700/50 shadow-2xl"
+                  className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 backdrop-blur-sm rounded-2xl sm:rounded-3xl p-5 sm:p-8 lg:p-10 border border-slate-700/50 shadow-2xl"
                   style={{ transformStyle: "preserve-3d" }}
                 >
-                  <div className="grid grid-cols-2 gap-6">
+                  <div className="grid grid-cols-2 gap-3 sm:gap-6">
                     {[
                       { value: "50+", label: "Years in Business", icon: Award },
                       { value: "1000+", label: "Active Dealers", icon: Users },
@@ -869,21 +869,21 @@ export default function Home() {
                         animate={{ opacity: 1, y: 0, rotateX: 0 }}
                         transition={{ delay: 0.5 + i * 0.1 }}
                         whileHover={{ scale: 1.05, z: 20 }}
-                        className="text-center p-4 rounded-2xl bg-slate-800/50 border border-slate-700/30 transition-all"
+                        className="text-center p-3 sm:p-4 rounded-xl sm:rounded-2xl bg-slate-800/50 border border-slate-700/30 transition-all"
                         style={{ transform: "translateZ(20px)" }}
                       >
-                        <stat.icon size={24} className="mx-auto mb-3 text-red-500" />
-                        <div className="text-3xl font-bold text-white mb-1">{stat.value}</div>
-                        <div className="text-slate-500 text-sm">{stat.label}</div>
+                        <stat.icon size={20} className="mx-auto mb-2 sm:mb-3 text-red-500 sm:w-6 sm:h-6" />
+                        <div className="text-2xl sm:text-3xl font-bold text-white mb-0.5 sm:mb-1">{stat.value}</div>
+                        <div className="text-slate-500 text-xs sm:text-sm">{stat.label}</div>
                       </motion.div>
                     ))}
                   </div>
 
                   <motion.div
-                    className="mt-8 p-4 rounded-xl bg-red-500/10 border border-red-500/20"
+                    className="mt-4 sm:mt-8 p-3 sm:p-4 rounded-lg sm:rounded-xl bg-red-500/10 border border-red-500/20"
                     style={{ transform: "translateZ(30px)" }}
                   >
-                    <p className="text-center text-red-400 font-medium">
+                    <p className="text-center text-red-400 font-medium text-sm sm:text-base">
                       Family-owned & operated for 50+ years
                     </p>
                   </motion.div>
@@ -926,9 +926,9 @@ export default function Home() {
       </section>
 
       {/* About Section with 3D cards */}
-      <section id="about" className="py-24 relative bg-slate-900/50">
+      <section id="about" className="py-16 sm:py-24 relative bg-slate-900/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div className="grid lg:grid-cols-2 gap-16 items-center">
+          <div className="grid lg:grid-cols-2 gap-10 lg:gap-16 items-center">
             <motion.div
               initial={{ opacity: 0, x: -50, rotateY: 10 }}
               whileInView={{ opacity: 1, x: 0, rotateY: 0 }}
@@ -936,7 +936,7 @@ export default function Home() {
               transition={{ duration: 0.8 }}
             >
               <span className="text-red-500 font-semibold text-sm uppercase tracking-wider">About Us</span>
-              <h2 className="text-3xl lg:text-4xl font-bold text-white mt-3 mb-6">
+              <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mt-3 mb-4 sm:mb-6">
                 A Legacy of Wholesale Excellence in Western PA
               </h2>
               <div className="space-y-4 text-slate-400">
@@ -1028,7 +1028,7 @@ export default function Home() {
       </section>
 
       {/* Brands Section with 3D hover */}
-      <section id="brands" className="py-24 relative overflow-hidden">
+      <section id="brands" className="py-16 sm:py-24 relative overflow-hidden">
         <motion.div
           style={{ y: statsSectionY }}
           className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8"
@@ -1037,10 +1037,10 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-10 sm:mb-16"
           >
             <span className="text-red-500 font-semibold text-sm uppercase tracking-wider">Our Brands</span>
-            <h2 className="text-3xl lg:text-4xl font-bold text-white mt-3 mb-4">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mt-3 mb-3 sm:mb-4">
               Premium Tire Brands at Wholesale Prices
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
@@ -1049,7 +1049,7 @@ export default function Home() {
             </p>
           </motion.div>
 
-          <div className="grid grid-cols-2 md:grid-cols-4 gap-4">
+          <div className="grid grid-cols-2 md:grid-cols-4 gap-3 sm:gap-4">
             {brands.map((brand, i) => (
               <motion.div
                 key={brand.name}
@@ -1063,18 +1063,18 @@ export default function Home() {
                   z: 50,
                   transition: { type: "spring", stiffness: 300 }
                 }}
-                className="group relative bg-slate-800/30 hover:bg-slate-800/60 border border-slate-800 hover:border-red-500/30 rounded-xl p-4 transition-all duration-300 cursor-pointer"
+                className="group relative bg-slate-800/30 hover:bg-slate-800/60 border border-slate-800 hover:border-red-500/30 rounded-lg sm:rounded-xl p-3 sm:p-4 transition-all duration-300 cursor-pointer"
                 style={{ transformStyle: "preserve-3d" }}
               >
-                <div className="flex flex-col items-center gap-3">
-                  <div className="h-14 w-full flex items-center justify-center px-3 bg-white/90 rounded-lg">
+                <div className="flex flex-col items-center gap-2 sm:gap-3">
+                  <div className="h-12 sm:h-14 w-full flex items-center justify-center px-2 sm:px-3 bg-white/90 rounded-lg">
                     <img
                       src={brand.logo}
                       alt={brand.name}
-                      className="max-h-10 w-auto object-contain"
+                      className="max-h-8 sm:max-h-10 w-auto object-contain"
                     />
                   </div>
-                  <span className={`text-xs uppercase tracking-wider px-2 py-1 rounded-full ${
+                  <span className={`text-[10px] sm:text-xs uppercase tracking-wider px-2 py-0.5 sm:py-1 rounded-full ${
                     brand.tier === 'premium'
                       ? 'bg-amber-500/10 text-amber-500'
                       : brand.tier === 'performance'
@@ -1109,7 +1109,7 @@ export default function Home() {
       </section>
 
       {/* Services Section */}
-      <section id="services" className="py-24 relative bg-slate-900/50">
+      <section id="services" className="py-16 sm:py-24 relative bg-slate-900/50">
         {/* Warehouse image background */}
         <div className="absolute inset-0 overflow-hidden opacity-10">
           <img
@@ -1123,10 +1123,10 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-10 sm:mb-16"
           >
             <span className="text-red-500 font-semibold text-sm uppercase tracking-wider">Services</span>
-            <h2 className="text-3xl lg:text-4xl font-bold text-white mt-3 mb-4">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mt-3 mb-3 sm:mb-4">
               Everything Your Tire Business Needs
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
@@ -1134,7 +1134,7 @@ export default function Home() {
             </p>
           </motion.div>
 
-          <div className="grid md:grid-cols-2 lg:grid-cols-3 gap-6">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-6">
             {[
               { icon: Truck, title: "Scheduled Delivery", description: "Regular delivery routes throughout Western PA. We keep your inventory stocked so you never miss a sale." },
               { icon: DollarSign, title: "Wholesale Pricing", description: "Competitive pricing designed to protect your margins. Volume discounts that actually make a difference." },
@@ -1150,17 +1150,17 @@ export default function Home() {
                 viewport={{ once: true }}
                 transition={{ delay: i * 0.1 }}
                 whileHover={{ scale: 1.02, rotateY: 5, z: 20 }}
-                className="bg-slate-800/30 border border-slate-800 rounded-xl p-6 hover:border-red-500/30 transition-all group cursor-default"
+                className="bg-slate-800/30 border border-slate-800 rounded-xl p-5 sm:p-6 hover:border-red-500/30 transition-all group cursor-default"
                 style={{ transformStyle: "preserve-3d" }}
               >
                 <motion.div
-                  className="w-12 h-12 rounded-xl bg-red-500/10 flex items-center justify-center mb-4 group-hover:bg-red-500/20 transition-colors"
+                  className="w-10 h-10 sm:w-12 sm:h-12 rounded-lg sm:rounded-xl bg-red-500/10 flex items-center justify-center mb-3 sm:mb-4 group-hover:bg-red-500/20 transition-colors"
                   whileHover={{ rotateY: 180 }}
                   transition={{ duration: 0.5 }}
                 >
-                  <service.icon size={24} className="text-red-500" />
+                  <service.icon size={20} className="text-red-500 sm:w-6 sm:h-6" />
                 </motion.div>
-                <h3 className="text-lg font-semibold text-white mb-2">{service.title}</h3>
+                <h3 className="text-base sm:text-lg font-semibold text-white mb-1.5 sm:mb-2">{service.title}</h3>
                 <p className="text-slate-400 text-sm leading-relaxed">{service.description}</p>
               </motion.div>
             ))}
@@ -1169,16 +1169,16 @@ export default function Home() {
       </section>
 
       {/* Careers Section with AI Resume Upload */}
-      <section id="careers" className="py-24 relative">
+      <section id="careers" className="py-16 sm:py-24 relative">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-12"
+            className="text-center mb-8 sm:mb-12"
           >
             <span className="text-red-500 font-semibold text-sm uppercase tracking-wider">Careers</span>
-            <h2 className="text-3xl lg:text-4xl font-bold text-white mt-3 mb-4">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mt-3 mb-3 sm:mb-4">
               Join the IE Tire Team
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
@@ -1211,15 +1211,15 @@ export default function Home() {
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
-              className="max-w-2xl mx-auto mb-12"
+              className="max-w-2xl mx-auto mb-8 sm:mb-12"
             >
-              <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-slate-700/50 rounded-2xl p-8 text-center">
-                <div className="flex items-center justify-center gap-2 mb-4">
-                  <Sparkles className="text-amber-500" size={24} />
-                  <span className="text-amber-500 font-semibold">AI-Powered Application</span>
+              <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-slate-700/50 rounded-xl sm:rounded-2xl p-5 sm:p-8 text-center">
+                <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
+                  <Sparkles className="text-amber-500" size={20} />
+                  <span className="text-amber-500 font-semibold text-sm sm:text-base">AI-Powered Application</span>
                 </div>
-                <h3 className="text-2xl font-bold text-white mb-3">Start with Your Resume</h3>
-                <p className="text-slate-400 mb-6">
+                <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3">Start with Your Resume</h3>
+                <p className="text-slate-400 text-sm sm:text-base mb-4 sm:mb-6">
                   Upload your resume and our AI will extract your information and match you to the best positions.
                 </p>
 
@@ -1502,7 +1502,7 @@ export default function Home() {
                 ))}
               </div>
 
-              <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4">
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
                 {(convexJobs || jobs)
                   .filter((job: any) => !activeJob || activeJob === null || job.department === activeJob)
                   .map((job: any, i: number) => {
@@ -1654,16 +1654,16 @@ export default function Home() {
       </section>
 
       {/* Contact Section */}
-      <section id="contact" className="py-24 relative bg-slate-900/50">
+      <section id="contact" className="py-16 sm:py-24 relative bg-slate-900/50">
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <motion.div
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="text-center mb-16"
+            className="text-center mb-10 sm:mb-16"
           >
             <span className="text-red-500 font-semibold text-sm uppercase tracking-wider">Contact</span>
-            <h2 className="text-3xl lg:text-4xl font-bold text-white mt-3 mb-4">
+            <h2 className="text-2xl sm:text-3xl lg:text-4xl font-bold text-white mt-3 mb-3 sm:mb-4">
               Let&apos;s Talk Tires
             </h2>
             <p className="text-slate-400 max-w-2xl mx-auto">
@@ -1672,7 +1672,7 @@ export default function Home() {
             </p>
           </motion.div>
 
-          <div className="grid lg:grid-cols-3 gap-8">
+          <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-4 sm:gap-8">
             {/* Latrobe */}
             <Card3D>
               <motion.div
@@ -1838,9 +1838,9 @@ export default function Home() {
             initial={{ opacity: 0, y: 30 }}
             whileInView={{ opacity: 1, y: 0 }}
             viewport={{ once: true }}
-            className="mt-12 bg-slate-800/30 border border-slate-800 rounded-xl p-6 lg:p-8 max-w-3xl mx-auto"
+            className="mt-8 sm:mt-12 bg-slate-800/30 border border-slate-800 rounded-xl p-5 sm:p-6 lg:p-8 max-w-3xl mx-auto sm:col-span-2 lg:col-span-3"
           >
-            <h3 className="text-xl font-semibold text-white mb-6 text-center">Send Us a Message</h3>
+            <h3 className="text-lg sm:text-xl font-semibold text-white mb-4 sm:mb-6 text-center">Send Us a Message</h3>
             <form className="space-y-4">
               <div className="grid sm:grid-cols-2 gap-4">
                 <div>
