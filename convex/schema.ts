@@ -121,12 +121,16 @@ export default defineSchema({
     title: v.string(),
     location: v.string(),
     type: v.string(), // "Full-time", "Part-time", etc.
+    positionType: v.optional(v.string()), // "hourly" | "salaried" | "management"
     department: v.string(), // "Operations", "Management", "Sales", etc.
     status: v.string(), // "accepting", "open", "closed"
     description: v.string(),
     benefits: v.array(v.string()),
     keywords: v.array(v.string()), // For AI matching
     isActive: v.boolean(),
+    urgentHiring: v.optional(v.boolean()), // Legacy - now use badgeType
+    badgeType: v.optional(v.string()), // "urgently_hiring" | "accepting_applications" | "open_position"
+    displayOrder: v.optional(v.number()), // For custom ordering
     createdAt: v.number(),
     updatedAt: v.number(),
   })
@@ -197,8 +201,41 @@ export default defineSchema({
     })),
 
     // Status tracking
-    status: v.string(), // "new", "reviewed", "contacted", "interviewed", "hired", "rejected"
+    status: v.string(), // "new" | "reviewed" | "contacted" | "scheduled" | "interviewed" | "hired" | "rejected"
     notes: v.optional(v.string()), // Internal notes
+
+    // Scheduled interview info
+    scheduledInterviewDate: v.optional(v.string()), // ISO date string (YYYY-MM-DD)
+    scheduledInterviewTime: v.optional(v.string()), // Time string (HH:MM)
+    scheduledInterviewLocation: v.optional(v.string()), // "In-person", "Phone", "Video", or custom location
+
+    // Interview rounds (up to 3)
+    interviewRounds: v.optional(
+      v.array(
+        v.object({
+          round: v.number(), // 1, 2, or 3
+          interviewerName: v.string(),
+          conductedAt: v.number(),
+          questions: v.array(
+            v.object({
+              question: v.string(),
+              answer: v.optional(v.string()),
+              aiGenerated: v.boolean(),
+            })
+          ),
+          interviewNotes: v.optional(v.string()),
+          aiEvaluation: v.optional(
+            v.object({
+              overallScore: v.number(),
+              strengths: v.array(v.string()),
+              concerns: v.array(v.string()),
+              recommendation: v.string(),
+              detailedFeedback: v.string(),
+            })
+          ),
+        })
+      )
+    ),
 
     // Timestamps
     createdAt: v.number(),

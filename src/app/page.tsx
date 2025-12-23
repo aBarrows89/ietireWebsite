@@ -1555,7 +1555,8 @@ export default function Home() {
                         />
 
                         {/* Status Ribbon - supports both badgeType and legacy urgentHiring field */}
-                        <div className={`absolute top-3 right-3 px-2 py-1 rounded text-xs font-semibold ${
+                        {/* Mobile: positioned below title, Desktop: absolute positioned */}
+                        <div className={`hidden sm:block absolute top-3 right-3 px-2 py-1 rounded text-xs font-semibold whitespace-nowrap ${
                           effectiveBadgeType === 'urgently_hiring'
                             ? 'bg-red-500/20 text-red-400 border border-red-500/30'
                             : effectiveBadgeType === 'accepting_applications'
@@ -1565,8 +1566,18 @@ export default function Home() {
                           {effectiveBadgeType === 'urgently_hiring' ? 'Urgently Hiring' : effectiveBadgeType === 'accepting_applications' ? 'Accepting Applications' : 'Open Position'}
                         </div>
 
-                        <div className="flex items-start justify-between">
-                          <h4 className="font-semibold text-white mb-2 pr-28">{job.title}</h4>
+                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
+                          <h4 className="font-semibold text-white sm:pr-32">{job.title}</h4>
+                          {/* Mobile badge - inline below title */}
+                          <div className={`sm:hidden inline-flex w-fit px-2 py-1 rounded text-xs font-semibold ${
+                            effectiveBadgeType === 'urgently_hiring'
+                              ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                              : effectiveBadgeType === 'accepting_applications'
+                                ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                                : 'bg-green-500/20 text-green-400 border border-green-500/30'
+                          }`}>
+                            {effectiveBadgeType === 'urgently_hiring' ? 'Urgently Hiring' : effectiveBadgeType === 'accepting_applications' ? 'Accepting Applications' : 'Open Position'}
+                          </div>
                         </div>
                         <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-3">
                           <span className="flex items-center gap-1">
