@@ -1,6 +1,6 @@
 "use client";
 
-import { motion, useScroll, useTransform, useSpring, MotionValue, AnimatePresence } from "framer-motion";
+import { motion, useScroll, useTransform, useSpring, AnimatePresence } from "framer-motion";
 import { useState, useRef, useEffect } from "react";
 import { useQuery, useMutation, useAction } from "convex/react";
 import { api } from "../../convex/_generated/api";
@@ -26,7 +26,6 @@ import {
   CheckCircle2,
   Upload,
   FileText,
-  Sparkles,
   Loader2,
   AlertCircle,
   ArrowUp,
@@ -192,11 +191,6 @@ const jobs = [
   },
 ];
 
-// Hook for parallax effect
-function useParallax(value: MotionValue<number>, distance: number) {
-  return useTransform(value, [0, 1], [-distance, distance]);
-}
-
 // 3D Card component with mouse tracking
 function Card3D({ children, className = "" }: { children: React.ReactNode; className?: string }) {
   const ref = useRef<HTMLDivElement>(null);
@@ -238,7 +232,6 @@ function Card3D({ children, className = "" }: { children: React.ReactNode; class
 export default function Home() {
   const [mobileMenuOpen, setMobileMenuOpen] = useState(false);
   const [activeJob, setActiveJob] = useState<string | null>(null);
-  const [expandedJobId, setExpandedJobId] = useState<string | null>(null);
   const [showReturnToTop, setShowReturnToTop] = useState(false);
 
   // Track scroll position for return to top button
