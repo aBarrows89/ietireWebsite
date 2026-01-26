@@ -460,12 +460,6 @@ export default function Home() {
         email: result.email || "",
         phone: result.phone || "",
       });
-
-      // Auto-select the best matching job
-      if (result.jobMatches.length > 0) {
-        setSelectedJobId(result.jobMatches[0].jobId);
-        setSelectedJobTitle(result.jobMatches[0].jobTitle);
-      }
     } catch (error) {
       console.error("Error parsing resume:", error);
       setSubmitError("Failed to analyze resume. Please try again.");
@@ -1205,22 +1199,134 @@ export default function Home() {
             </motion.div>
           )}
 
-          {/* Step 1: AI Resume Upload - Primary CTA */}
-          {!submitSuccess && (
+          {/* Step 1: Select a Position */}
+          {!submitSuccess && !selectedJobId && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
               viewport={{ once: true }}
+              className="mb-8 sm:mb-12"
+            >
+              <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-slate-700/50 rounded-xl sm:rounded-2xl p-5 sm:p-8 text-center mb-8">
+                <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
+                  <Briefcase className="text-amber-500" size={20} />
+                  <span className="text-amber-500 font-semibold text-sm sm:text-base">Step 1</span>
+                </div>
+                <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3">Select a Position to Apply For</h3>
+                <p className="text-slate-400 text-sm sm:text-base">
+                  Browse our open positions and click one to begin your application.
+                </p>
+              </div>
+
+              {/* Department filters */}
+              <div className="flex flex-wrap justify-center gap-2 mb-6">
+                {['All', 'Operations', 'Management', 'Sales', 'Technology', 'Administration'].map((dept) => (
+                  <button
+                    key={dept}
+                    onClick={() => setActiveJob(dept === 'All' ? null : dept)}
+                    className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${
+                      (dept === 'All' && activeJob === null) || activeJob === dept
+                        ? 'bg-red-600 text-white'
+                        : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
+                    }`}
+                  >
+                    {dept}
+                  </button>
+                ))}
+              </div>
+
+              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
+                {(convexJobs || jobs)
+                  .filter((job: any) => !activeJob || activeJob === null || job.department === activeJob)
+                  .map((job: any, i: number) => {
+                    const jobId = job._id || job.id || `job-${i}`;
+                    const effectiveBadgeType = job.badgeType || (job.urgentHiring ? 'urgently_hiring' : 'open_position');
+
+                    return (
+                      <motion.button
+                        key={jobId}
+                        initial={{ opacity: 0, y: 20 }}
+                        whileInView={{ opacity: 1, y: 0 }}
+                        viewport={{ once: true }}
+                        transition={{ delay: i * 0.05 }}
+                        whileHover={{ scale: 1.02 }}
+                        whileTap={{ scale: 0.98 }}
+                        onClick={() => {
+                          setSelectedJobId(jobId);
+                          setSelectedJobTitle(job.title);
+                        }}
+                        className="relative text-left bg-slate-800/30 border border-slate-700 hover:border-red-500/50 rounded-xl p-5 transition-all"
+                      >
+                        {/* Status Badge */}
+                        <div className={`absolute top-3 right-3 px-2 py-1 rounded text-xs font-semibold whitespace-nowrap ${
+                          effectiveBadgeType === 'urgently_hiring'
+                            ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                            : effectiveBadgeType === 'accepting_applications'
+                              ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                              : 'bg-green-500/20 text-green-400 border border-green-500/30'
+                        }`}>
+                          {effectiveBadgeType === 'urgently_hiring' ? 'Urgently Hiring' : effectiveBadgeType === 'accepting_applications' ? 'Accepting Applications' : 'Open Position'}
+                        </div>
+
+                        <h4 className="font-semibold text-white pr-24 mb-2">{job.title}</h4>
+                        <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-3">
+                          <span className="flex items-center gap-1">
+                            <MapPin size={12} />
+                            {job.location}
+                          </span>
+                          <span className="bg-slate-700/50 px-2 py-0.5 rounded text-slate-400">
+                            {job.department}
+                          </span>
+                          <span className="bg-slate-700/50 px-2 py-0.5 rounded text-slate-400">
+                            {job.type}
+                          </span>
+                        </div>
+                        <p className="text-slate-400 text-sm line-clamp-2">{job.description}</p>
+
+                        <div className="mt-4 flex items-center gap-2 text-red-400 text-sm font-medium">
+                          <span>Apply for this position</span>
+                          <ChevronRight size={16} />
+                        </div>
+                      </motion.button>
+                    );
+                  })}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Step 2: Upload Resume (shown after job selection) */}
+          {!submitSuccess && selectedJobId && !parsedData && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
               className="max-w-2xl mx-auto mb-8 sm:mb-12"
             >
+              {/* Selected Job Header */}
+              <div className="bg-slate-800/50 border border-slate-700/50 rounded-xl p-4 mb-6 flex items-center justify-between">
+                <div>
+                  <span className="text-slate-400 text-xs uppercase">Applying for:</span>
+                  <h4 className="text-white font-semibold">{selectedJobTitle}</h4>
+                </div>
+                <button
+                  onClick={() => {
+                    setSelectedJobId(null);
+                    setSelectedJobTitle("");
+                  }}
+                  className="text-slate-400 hover:text-white text-sm flex items-center gap-1"
+                >
+                  Change
+                  <ChevronRight size={14} className="rotate-180" />
+                </button>
+              </div>
+
               <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-slate-700/50 rounded-xl sm:rounded-2xl p-5 sm:p-8 text-center">
                 <div className="flex items-center justify-center gap-2 mb-3 sm:mb-4">
-                  <Sparkles className="text-amber-500" size={20} />
-                  <span className="text-amber-500 font-semibold text-sm sm:text-base">AI-Powered Application</span>
+                  <Upload className="text-amber-500" size={20} />
+                  <span className="text-amber-500 font-semibold text-sm sm:text-base">Step 2</span>
                 </div>
-                <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3">Start with Your Resume</h3>
+                <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3">Upload Your Resume</h3>
                 <p className="text-slate-400 text-sm sm:text-base mb-4 sm:mb-6">
-                  Upload your resume and our AI will extract your information and match you to the best positions.
+                  Upload your resume and we&apos;ll extract your contact information to complete your application.
                 </p>
 
                 <input
@@ -1240,28 +1346,17 @@ export default function Home() {
                     className={`p-6 rounded-xl border-2 border-dashed transition-all ${
                       isParsing
                         ? 'border-red-500 bg-red-500/10'
-                        : resumeFile && parsedData
-                          ? 'border-green-500 bg-green-500/10'
-                          : 'border-slate-600 hover:border-red-500/50 bg-slate-800/50'
+                        : 'border-slate-600 hover:border-red-500/50 bg-slate-800/50'
                     }`}
                   >
                     {isParsing ? (
                       <div className="flex flex-col items-center gap-3">
                         <Loader2 size={40} className="text-red-500 animate-spin" />
-                        <span className="text-white font-medium">Analyzing your resume...</span>
+                        <span className="text-white font-medium">Processing your resume...</span>
                         <div className="flex items-center gap-2 text-slate-400 text-sm">
                           <span className="w-2 h-2 bg-red-500 rounded-full animate-pulse" />
-                          Extracting contact info, skills, and matching to jobs
+                          Extracting your information
                         </div>
-                      </div>
-                    ) : resumeFile && parsedData ? (
-                      <div className="flex flex-col items-center gap-3">
-                        <FileText size={40} className="text-green-500" />
-                        <span className="text-white font-medium">{resumeFile.name}</span>
-                        <span className="text-green-400 text-sm flex items-center gap-1">
-                          <CheckCircle2 size={16} />
-                          Resume analyzed - scroll down to review matches
-                        </span>
                       </div>
                     ) : (
                       <div className="flex flex-col items-center gap-3">
@@ -1290,27 +1385,57 @@ export default function Home() {
             </motion.div>
           )}
 
-          {/* AI Analysis Results */}
-          {parsedData && !submitSuccess && (
+          {/* Step 3: Complete Application (shown after resume upload) */}
+          {parsedData && !submitSuccess && selectedJobId && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               animate={{ opacity: 1, y: 0 }}
-              className="max-w-4xl mx-auto mb-12"
+              className="max-w-2xl mx-auto mb-12"
             >
               <div className="bg-slate-800/50 border border-slate-700/50 rounded-2xl p-6">
-                <div className="flex items-center justify-between mb-6">
-                  <div className="flex items-center gap-3">
-                    <div className="w-12 h-12 bg-green-500/20 rounded-full flex items-center justify-center">
-                      <CheckCircle2 className="text-green-500" size={24} />
-                    </div>
-                    <div>
-                      <h4 className="text-white font-semibold">AI Analysis Complete</h4>
-                      <p className="text-slate-400 text-sm">Review your information and select a position</p>
-                    </div>
+                {/* Selected Job Header */}
+                <div className="bg-slate-900/50 border border-slate-700/50 rounded-xl p-4 mb-6 flex items-center justify-between">
+                  <div>
+                    <span className="text-slate-400 text-xs uppercase">Applying for:</span>
+                    <h4 className="text-white font-semibold">{selectedJobTitle}</h4>
+                  </div>
+                  <button
+                    onClick={() => {
+                      setSelectedJobId(null);
+                      setSelectedJobTitle("");
+                      setParsedData(null);
+                      setResumeFile(null);
+                      setResumeText("");
+                    }}
+                    className="text-slate-400 hover:text-white text-sm flex items-center gap-1"
+                  >
+                    Start Over
+                    <X size={14} />
+                  </button>
+                </div>
+
+                {/* Resume Uploaded Confirmation */}
+                <div className="flex items-center gap-3 mb-6 p-4 bg-green-500/10 border border-green-500/20 rounded-xl">
+                  <div className="w-10 h-10 bg-green-500/20 rounded-full flex items-center justify-center">
+                    <FileText className="text-green-500" size={20} />
+                  </div>
+                  <div>
+                    <p className="text-white font-medium text-sm">{resumeFile?.name}</p>
+                    <p className="text-green-400 text-xs flex items-center gap-1">
+                      <CheckCircle2 size={12} />
+                      Resume uploaded successfully
+                    </p>
                   </div>
                 </div>
 
-                {/* Applicant Information - Always Editable */}
+                <div className="flex items-center justify-center gap-2 mb-4">
+                  <Send className="text-amber-500" size={20} />
+                  <span className="text-amber-500 font-semibold text-sm sm:text-base">Step 3</span>
+                </div>
+                <h4 className="text-xl font-bold text-white mb-2 text-center">Complete Your Application</h4>
+                <p className="text-slate-400 text-sm text-center mb-6">Review and confirm your contact information.</p>
+
+                {/* Applicant Information */}
                 <div className="grid sm:grid-cols-2 gap-4 mb-6">
                   <div className="bg-slate-900/50 rounded-lg p-4">
                     <label className="text-slate-400 text-xs uppercase block mb-2">First Name *</label>
@@ -1362,30 +1487,6 @@ export default function Home() {
                   </div>
                 </div>
 
-                {/* Skills & Summary */}
-                {(parsedData.extractedSkills.length > 0 || parsedData.summary) && (
-                  <div className="bg-slate-900/50 rounded-lg p-4 mb-6">
-                    {parsedData.summary && (
-                      <div className="mb-4">
-                        <span className="text-slate-400 text-xs uppercase block mb-2">AI Summary</span>
-                        <p className="text-slate-300 text-sm">{parsedData.summary}</p>
-                      </div>
-                    )}
-                    {parsedData.extractedSkills.length > 0 && (
-                      <div>
-                        <span className="text-slate-400 text-xs uppercase block mb-2">Detected Skills</span>
-                        <div className="flex flex-wrap gap-2">
-                          {parsedData.extractedSkills.map((skill, i) => (
-                            <span key={i} className="px-2 py-1 bg-slate-800 text-slate-300 text-xs rounded-full">
-                              {skill}
-                            </span>
-                          ))}
-                        </div>
-                      </div>
-                    )}
-                  </div>
-                )}
-
                 {/* Missing Fields Warning */}
                 {(!manualInput.firstName || !manualInput.lastName || !manualInput.email || !manualInput.phone) && (
                   <div className="bg-amber-500/10 border border-amber-500/20 rounded-lg p-3 mb-6">
@@ -1396,65 +1497,16 @@ export default function Home() {
                   </div>
                 )}
 
-                {/* Job Matches */}
-                <h5 className="text-white font-semibold mb-4">Job Matches (select one to apply)</h5>
-                <div className="grid sm:grid-cols-2 lg:grid-cols-3 gap-3">
-                  {parsedData.jobMatches.slice(0, 6).map((match, i) => (
-                    <motion.button
-                      key={match.jobId}
-                      onClick={() => {
-                        setSelectedJobId(match.jobId);
-                        setSelectedJobTitle(match.jobTitle);
-                      }}
-                      whileHover={{ scale: 1.02 }}
-                      whileTap={{ scale: 0.98 }}
-                      className={`text-left p-4 rounded-xl border transition-all ${
-                        selectedJobId === match.jobId
-                          ? 'border-red-500 bg-red-500/10'
-                          : 'border-slate-700 bg-slate-900/30 hover:border-slate-600'
-                      }`}
-                    >
-                      <div className="flex items-center justify-between mb-2">
-                        <span className={`text-lg font-bold ${
-                          match.score >= 70 ? 'text-green-400' :
-                          match.score >= 40 ? 'text-amber-400' : 'text-slate-400'
-                        }`}>
-                          {match.score}%
-                        </span>
-                        {i === 0 && (
-                          <span className="text-xs bg-green-500/20 text-green-400 px-2 py-0.5 rounded">
-                            Best Match
-                          </span>
-                        )}
-                        {selectedJobId === match.jobId && (
-                          <CheckCircle2 size={16} className="text-red-500" />
-                        )}
-                      </div>
-                      <h6 className="text-white font-medium text-sm">{match.jobTitle}</h6>
-                      {match.reasoning && (
-                        <p className="text-slate-400 text-xs mt-2 leading-relaxed">
-                          {match.reasoning}
-                        </p>
-                      )}
-                      {match.matchedKeywords.length > 0 && (
-                        <p className="text-slate-500 text-xs mt-1">
-                          Skills: {match.matchedKeywords.slice(0, 3).join(', ')}
-                        </p>
-                      )}
-                    </motion.button>
-                  ))}
-                </div>
-
                 {/* Submit Button */}
                 <motion.button
                   onClick={handleSubmitApplication}
-                  disabled={!selectedJobId || isSubmitting}
-                  whileHover={{ scale: selectedJobId && !isSubmitting ? 1.02 : 1 }}
-                  whileTap={{ scale: selectedJobId && !isSubmitting ? 0.98 : 1 }}
-                  className={`w-full mt-6 py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
-                    selectedJobId && !isSubmitting
-                      ? 'bg-red-600 hover:bg-red-500 hover:shadow-lg hover:shadow-red-500/25'
-                      : 'bg-slate-700 cursor-not-allowed'
+                  disabled={!manualInput.firstName || !manualInput.lastName || !manualInput.email || !manualInput.phone || isSubmitting}
+                  whileHover={{ scale: manualInput.firstName && manualInput.lastName && manualInput.email && manualInput.phone && !isSubmitting ? 1.02 : 1 }}
+                  whileTap={{ scale: manualInput.firstName && manualInput.lastName && manualInput.email && manualInput.phone && !isSubmitting ? 0.98 : 1 }}
+                  className={`w-full py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
+                    manualInput.firstName && manualInput.lastName && manualInput.email && manualInput.phone && !isSubmitting
+                      ? 'bg-red-600 hover:bg-red-500 hover:shadow-lg hover:shadow-red-500/25 text-white'
+                      : 'bg-slate-700 cursor-not-allowed text-slate-400'
                   }`}
                 >
                   {isSubmitting ? (
@@ -1465,7 +1517,7 @@ export default function Home() {
                   ) : (
                     <>
                       <Send size={18} />
-                      {selectedJobTitle ? `Apply for ${selectedJobTitle}` : 'Select a position above'}
+                      Submit Application for {selectedJobTitle}
                     </>
                   )}
                 </motion.button>
@@ -1473,194 +1525,6 @@ export default function Home() {
             </motion.div>
           )}
 
-          {/* Available Positions (shown before resume upload) */}
-          {!parsedData && !submitSuccess && (
-            <motion.div
-              initial={{ opacity: 0, y: 20 }}
-              whileInView={{ opacity: 1, y: 0 }}
-              viewport={{ once: true }}
-              className="mb-12"
-            >
-              <h3 className="text-xl font-semibold text-white mb-6 text-center">
-                Available Positions
-              </h3>
-
-              {/* Department filters */}
-              <div className="flex flex-wrap justify-center gap-2 mb-6">
-                {['All', 'Operations', 'Management', 'Sales', 'Technology', 'Administration'].map((dept) => (
-                  <button
-                    key={dept}
-                    onClick={() => setActiveJob(dept === 'All' ? null : dept)}
-                    className={`px-3 py-1.5 sm:px-4 sm:py-2 rounded-full text-xs sm:text-sm font-medium transition-all ${
-                      (dept === 'All' && activeJob === null) || activeJob === dept
-                        ? 'bg-red-600 text-white'
-                        : 'bg-slate-800 text-slate-400 hover:bg-slate-700'
-                    }`}
-                  >
-                    {dept}
-                  </button>
-                ))}
-              </div>
-
-              <div className="grid gap-4 sm:grid-cols-2 lg:grid-cols-3">
-                {(convexJobs || jobs)
-                  .filter((job: any) => !activeJob || activeJob === null || job.department === activeJob)
-                  .map((job: any, i: number) => {
-                    const jobId = job._id || job.id || `job-${i}`;
-                    const isExpanded = expandedJobId === jobId;
-                    const effectiveBadgeType = job.badgeType || (job.urgentHiring ? 'urgently_hiring' : 'open_position');
-
-                    // Generate JobPosting structured data
-                    const jobPostingSchema = {
-                      "@context": "https://schema.org",
-                      "@type": "JobPosting",
-                      "title": job.title,
-                      "description": job.description,
-                      "datePosted": job.createdAt ? new Date(job.createdAt).toISOString().split('T')[0] : new Date().toISOString().split('T')[0],
-                      "hiringOrganization": {
-                        "@type": "Organization",
-                        "name": "IE Tire",
-                        "sameAs": "https://www.ietires.com",
-                        "logo": "https://www.ietires.com/logo.png"
-                      },
-                      "jobLocation": {
-                        "@type": "Place",
-                        "address": {
-                          "@type": "PostalAddress",
-                          "addressLocality": job.location?.split(',')[0]?.trim() || "Latrobe",
-                          "addressRegion": job.location?.split(',')[1]?.trim() || "PA",
-                          "addressCountry": "US"
-                        }
-                      },
-                      "employmentType": job.type === "Full-time" ? "FULL_TIME" : job.type === "Part-time" ? "PART_TIME" : "FULL_TIME",
-                      "industry": "Wholesale Tire Distribution",
-                      "occupationalCategory": job.department || "Operations"
-                    };
-
-                    return (
-                      <motion.div
-                        key={jobId}
-                        initial={{ opacity: 0, y: 20 }}
-                        whileInView={{ opacity: 1, y: 0 }}
-                        viewport={{ once: true }}
-                        transition={{ delay: i * 0.05 }}
-                        layout
-                        className="relative bg-slate-800/30 border border-slate-800 hover:border-slate-700 rounded-xl p-5 transition-all overflow-hidden cursor-pointer"
-                        onClick={() => setExpandedJobId(isExpanded ? null : jobId)}
-                      >
-                        {/* JSON-LD Structured Data */}
-                        <script
-                          type="application/ld+json"
-                          dangerouslySetInnerHTML={{ __html: JSON.stringify(jobPostingSchema) }}
-                        />
-
-                        {/* Status Ribbon - supports both badgeType and legacy urgentHiring field */}
-                        {/* Mobile: positioned below title, Desktop: absolute positioned */}
-                        <div className={`hidden sm:block absolute top-3 right-3 px-2 py-1 rounded text-xs font-semibold whitespace-nowrap ${
-                          effectiveBadgeType === 'urgently_hiring'
-                            ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                            : effectiveBadgeType === 'accepting_applications'
-                              ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                              : 'bg-green-500/20 text-green-400 border border-green-500/30'
-                        }`}>
-                          {effectiveBadgeType === 'urgently_hiring' ? 'Urgently Hiring' : effectiveBadgeType === 'accepting_applications' ? 'Accepting Applications' : 'Open Position'}
-                        </div>
-
-                        <div className="flex flex-col sm:flex-row sm:items-start sm:justify-between gap-2">
-                          <h4 className="font-semibold text-white sm:pr-32">{job.title}</h4>
-                          {/* Mobile badge - inline below title */}
-                          <div className={`sm:hidden inline-flex w-fit px-2 py-1 rounded text-xs font-semibold ${
-                            effectiveBadgeType === 'urgently_hiring'
-                              ? 'bg-red-500/20 text-red-400 border border-red-500/30'
-                              : effectiveBadgeType === 'accepting_applications'
-                                ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
-                                : 'bg-green-500/20 text-green-400 border border-green-500/30'
-                          }`}>
-                            {effectiveBadgeType === 'urgently_hiring' ? 'Urgently Hiring' : effectiveBadgeType === 'accepting_applications' ? 'Accepting Applications' : 'Open Position'}
-                          </div>
-                        </div>
-                        <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-3">
-                          <span className="flex items-center gap-1">
-                            <MapPin size={12} />
-                            {job.location}
-                          </span>
-                          <span className="bg-slate-700/50 px-2 py-0.5 rounded text-slate-400">
-                            {job.department}
-                          </span>
-                          <span className="bg-slate-700/50 px-2 py-0.5 rounded text-slate-400">
-                            {job.type}
-                          </span>
-                        </div>
-                        <p className={`text-slate-400 text-sm ${isExpanded ? '' : 'line-clamp-2'}`}>{job.description}</p>
-
-                        {/* Expandable Details */}
-                        <AnimatePresence>
-                          {isExpanded && (
-                            <motion.div
-                              initial={{ opacity: 0, height: 0 }}
-                              animate={{ opacity: 1, height: "auto" }}
-                              exit={{ opacity: 0, height: 0 }}
-                              transition={{ duration: 0.2 }}
-                              className="overflow-hidden"
-                            >
-                              {/* Benefits */}
-                              {job.benefits && job.benefits.length > 0 && (
-                                <div className="mt-4 pt-4 border-t border-slate-700/50">
-                                  <h5 className="text-sm font-medium text-white mb-2">Benefits</h5>
-                                  <ul className="space-y-1">
-                                    {job.benefits.map((benefit: string, idx: number) => (
-                                      <li key={idx} className="text-slate-400 text-sm flex items-center gap-2">
-                                        <CheckCircle2 size={14} className="text-green-400 flex-shrink-0" />
-                                        {benefit}
-                                      </li>
-                                    ))}
-                                  </ul>
-                                </div>
-                              )}
-
-                              {/* Keywords/Skills */}
-                              {job.keywords && job.keywords.length > 0 && (
-                                <div className="mt-4">
-                                  <h5 className="text-sm font-medium text-white mb-2">Skills & Keywords</h5>
-                                  <div className="flex flex-wrap gap-2">
-                                    {job.keywords.map((keyword: string, idx: number) => (
-                                      <span key={idx} className="bg-slate-700/70 px-2 py-1 rounded text-xs text-slate-300">
-                                        {keyword}
-                                      </span>
-                                    ))}
-                                  </div>
-                                </div>
-                              )}
-
-                              {/* Apply CTA */}
-                              <div className="mt-4 pt-4 border-t border-slate-700/50">
-                                <p className="text-slate-400 text-sm">
-                                  Interested? Upload your resume above to apply!
-                                </p>
-                              </div>
-                            </motion.div>
-                          )}
-                        </AnimatePresence>
-
-                        {/* Expand/Collapse Indicator */}
-                        <div className="flex items-center justify-center mt-3">
-                          <motion.div
-                            animate={{ rotate: isExpanded ? 180 : 0 }}
-                            transition={{ duration: 0.2 }}
-                          >
-                            <ChevronDown size={16} className="text-slate-500" />
-                          </motion.div>
-                        </div>
-                      </motion.div>
-                    );
-                  })}
-              </div>
-
-              <p className="text-center text-slate-500 mt-6">
-                Upload your resume above to see which positions match your skills!
-              </p>
-            </motion.div>
-          )}
         </div>
       </section>
 
