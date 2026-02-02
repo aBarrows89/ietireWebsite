@@ -234,6 +234,11 @@ export default function Home() {
   const [activeJob, setActiveJob] = useState<string | null>(null);
   const [showReturnToTop, setShowReturnToTop] = useState(false);
 
+  // New state for job detail view
+  const [viewingJob, setViewingJob] = useState<any | null>(null);
+  const [selectedLocation, setSelectedLocation] = useState<string | null>(null);
+  const [showLocationSelector, setShowLocationSelector] = useState(false);
+
   // Track scroll position for return to top button
   useEffect(() => {
     const handleScroll = () => {
@@ -1193,7 +1198,7 @@ export default function Home() {
           )}
 
           {/* Step 1: Select a Position */}
-          {!submitSuccess && !selectedJobId && (
+          {!submitSuccess && !selectedJobId && !viewingJob && (
             <motion.div
               initial={{ opacity: 0, y: 20 }}
               whileInView={{ opacity: 1, y: 0 }}
@@ -1207,7 +1212,7 @@ export default function Home() {
                 </div>
                 <h3 className="text-xl sm:text-2xl font-bold text-white mb-2 sm:mb-3">Select a Position to Apply For</h3>
                 <p className="text-slate-400 text-sm sm:text-base">
-                  Browse our open positions and click one to begin your application.
+                  Browse our open positions and click one to view details.
                 </p>
               </div>
 
@@ -1245,8 +1250,19 @@ export default function Home() {
                         whileHover={{ scale: 1.02 }}
                         whileTap={{ scale: 0.98 }}
                         onClick={() => {
-                          setSelectedJobId(jobId);
-                          setSelectedJobTitle(job.title);
+                          setViewingJob({ ...job, _id: jobId });
+                          // Scroll to careers section to show job detail
+                          setTimeout(() => {
+                            const careersSection = document.getElementById("careers");
+                            if (careersSection) {
+                              const elementRect = careersSection.getBoundingClientRect();
+                              const absoluteElementTop = elementRect.top + window.pageYOffset;
+                              window.scrollTo({
+                                top: absoluteElementTop - 100,
+                                behavior: "smooth"
+                              });
+                            }
+                          }, 50);
                         }}
                         className="relative text-left bg-slate-800/30 border border-slate-700 hover:border-red-500/50 rounded-xl p-5 transition-all"
                       >
@@ -1265,7 +1281,7 @@ export default function Home() {
                         <div className="flex flex-wrap gap-2 text-xs text-slate-500 mb-3">
                           <span className="flex items-center gap-1">
                             <MapPin size={12} />
-                            {job.location}
+                            {job.locations && job.locations.length > 1 ? `${job.locations.length} Locations` : (job.location || (job.locations && job.locations[0]))}
                           </span>
                           <span className="bg-slate-700/50 px-2 py-0.5 rounded text-slate-400">
                             {job.department}
@@ -1277,12 +1293,175 @@ export default function Home() {
                         <p className="text-slate-400 text-sm line-clamp-2">{job.description}</p>
 
                         <div className="mt-4 flex items-center gap-2 text-red-400 text-sm font-medium">
-                          <span>Apply for this position</span>
+                          <span>View Details</span>
                           <ChevronRight size={16} />
                         </div>
                       </motion.button>
                     );
                   })}
+              </div>
+            </motion.div>
+          )}
+
+          {/* Job Detail View */}
+          {!submitSuccess && !selectedJobId && viewingJob && (
+            <motion.div
+              initial={{ opacity: 0, y: 20 }}
+              animate={{ opacity: 1, y: 0 }}
+              className="max-w-3xl mx-auto mb-8 sm:mb-12"
+            >
+              {/* Back button */}
+              <button
+                onClick={() => {
+                  setViewingJob(null);
+                  setShowLocationSelector(false);
+                  setSelectedLocation(null);
+                }}
+                className="flex items-center gap-2 text-slate-400 hover:text-white mb-6 transition-colors"
+              >
+                <ChevronRight size={16} className="rotate-180" />
+                <span>Back to all positions</span>
+              </button>
+
+              <div className="bg-gradient-to-br from-slate-800/80 to-slate-900/80 border border-slate-700/50 rounded-xl sm:rounded-2xl p-6 sm:p-8">
+                {/* Job Header */}
+                <div className="flex flex-wrap items-start justify-between gap-4 mb-6">
+                  <div>
+                    <div className={`inline-block px-3 py-1 rounded text-xs font-semibold mb-3 ${
+                      (viewingJob.badgeType || (viewingJob.urgentHiring ? 'urgently_hiring' : 'open_position')) === 'urgently_hiring'
+                        ? 'bg-red-500/20 text-red-400 border border-red-500/30'
+                        : (viewingJob.badgeType || 'open_position') === 'accepting_applications'
+                          ? 'bg-blue-500/20 text-blue-400 border border-blue-500/30'
+                          : 'bg-green-500/20 text-green-400 border border-green-500/30'
+                    }`}>
+                      {(viewingJob.badgeType || (viewingJob.urgentHiring ? 'urgently_hiring' : 'open_position')) === 'urgently_hiring' ? 'Urgently Hiring' : (viewingJob.badgeType || 'open_position') === 'accepting_applications' ? 'Accepting Applications' : 'Open Position'}
+                    </div>
+                    <h3 className="text-2xl sm:text-3xl font-bold text-white mb-2">{viewingJob.title}</h3>
+                    <div className="flex flex-wrap gap-3 text-sm text-slate-400">
+                      <span className="flex items-center gap-1">
+                        <MapPin size={14} />
+                        {viewingJob.locations && viewingJob.locations.length > 1
+                          ? viewingJob.locations.join(" | ")
+                          : (viewingJob.location || (viewingJob.locations && viewingJob.locations[0]))}
+                      </span>
+                      <span className="bg-slate-700/50 px-2 py-0.5 rounded">
+                        {viewingJob.department}
+                      </span>
+                      <span className="bg-slate-700/50 px-2 py-0.5 rounded">
+                        {viewingJob.type}
+                      </span>
+                      {viewingJob.positionType && (
+                        <span className="bg-slate-700/50 px-2 py-0.5 rounded capitalize">
+                          {viewingJob.positionType}
+                        </span>
+                      )}
+                    </div>
+                  </div>
+                </div>
+
+                {/* Job Description */}
+                <div className="mb-6">
+                  <h4 className="text-lg font-semibold text-white mb-3">About This Position</h4>
+                  <p className="text-slate-300 leading-relaxed">{viewingJob.description}</p>
+                </div>
+
+                {/* Benefits */}
+                {viewingJob.benefits && viewingJob.benefits.length > 0 && (
+                  <div className="mb-6">
+                    <h4 className="text-lg font-semibold text-white mb-3">Benefits</h4>
+                    <div className="grid sm:grid-cols-2 gap-2">
+                      {viewingJob.benefits.map((benefit: string, i: number) => (
+                        <div key={i} className="flex items-center gap-2 text-slate-300">
+                          <CheckCircle2 size={16} className="text-green-500 shrink-0" />
+                          <span>{benefit}</span>
+                        </div>
+                      ))}
+                    </div>
+                  </div>
+                )}
+
+                {/* Location Selector (if multiple locations) */}
+                {showLocationSelector && viewingJob.locations && viewingJob.locations.length > 1 && (
+                  <motion.div
+                    initial={{ opacity: 0, height: 0 }}
+                    animate={{ opacity: 1, height: "auto" }}
+                    className="mb-6 bg-slate-900/50 border border-slate-700/50 rounded-xl p-5"
+                  >
+                    <h4 className="text-lg font-semibold text-white mb-3">Select a Location</h4>
+                    <p className="text-slate-400 text-sm mb-4">This position is available at multiple locations. Please select where you&apos;d like to apply:</p>
+                    <div className="grid gap-2">
+                      {viewingJob.locations.map((loc: string, i: number) => (
+                        <button
+                          key={i}
+                          onClick={() => setSelectedLocation(loc)}
+                          className={`flex items-center gap-3 p-4 rounded-lg border transition-all text-left ${
+                            selectedLocation === loc
+                              ? 'bg-red-500/20 border-red-500/50 text-white'
+                              : 'bg-slate-800/50 border-slate-700 text-slate-300 hover:border-slate-600'
+                          }`}
+                        >
+                          <div className={`w-5 h-5 rounded-full border-2 flex items-center justify-center ${
+                            selectedLocation === loc ? 'border-red-500 bg-red-500' : 'border-slate-500'
+                          }`}>
+                            {selectedLocation === loc && (
+                              <CheckCircle2 size={12} className="text-white" />
+                            )}
+                          </div>
+                          <MapPin size={16} className="shrink-0" />
+                          <span>{loc}</span>
+                        </button>
+                      ))}
+                    </div>
+                  </motion.div>
+                )}
+
+                {/* Apply Button */}
+                <motion.button
+                  onClick={() => {
+                    const jobLocations = viewingJob.locations || [viewingJob.location];
+                    // If multiple locations and none selected yet, show location selector
+                    if (jobLocations.length > 1 && !selectedLocation && !showLocationSelector) {
+                      setShowLocationSelector(true);
+                      return;
+                    }
+                    // If multiple locations, require selection
+                    if (jobLocations.length > 1 && !selectedLocation) {
+                      return; // Location selector is shown, wait for selection
+                    }
+                    // Proceed to Step 2
+                    const finalLocation = selectedLocation || jobLocations[0];
+                    setSelectedJobId(viewingJob._id);
+                    setSelectedJobTitle(`${viewingJob.title} - ${finalLocation}`);
+                    setViewingJob(null);
+                    setShowLocationSelector(false);
+                    setSelectedLocation(null);
+                    // Scroll to show the resume upload section
+                    setTimeout(() => {
+                      const careersSection = document.getElementById("careers");
+                      if (careersSection) {
+                        const elementRect = careersSection.getBoundingClientRect();
+                        const absoluteElementTop = elementRect.top + window.pageYOffset;
+                        window.scrollTo({
+                          top: absoluteElementTop - 100,
+                          behavior: "smooth"
+                        });
+                      }
+                    }, 50);
+                  }}
+                  disabled={showLocationSelector && viewingJob.locations && viewingJob.locations.length > 1 && !selectedLocation}
+                  whileHover={{ scale: (showLocationSelector && !selectedLocation) ? 1 : 1.02 }}
+                  whileTap={{ scale: (showLocationSelector && !selectedLocation) ? 1 : 0.98 }}
+                  className={`w-full py-4 rounded-xl font-semibold transition-all flex items-center justify-center gap-2 ${
+                    showLocationSelector && viewingJob.locations && viewingJob.locations.length > 1 && !selectedLocation
+                      ? 'bg-slate-700 text-slate-400 cursor-not-allowed'
+                      : 'bg-red-600 hover:bg-red-500 hover:shadow-lg hover:shadow-red-500/25 text-white'
+                  }`}
+                >
+                  <Briefcase size={18} />
+                  {showLocationSelector && viewingJob.locations && viewingJob.locations.length > 1 && !selectedLocation
+                    ? 'Select a location above'
+                    : `Apply for ${viewingJob.title}`}
+                </motion.button>
               </div>
             </motion.div>
           )}
@@ -1304,6 +1483,8 @@ export default function Home() {
                   onClick={() => {
                     setSelectedJobId(null);
                     setSelectedJobTitle("");
+                    setSelectedLocation(null);
+                    setShowLocationSelector(false);
                   }}
                   className="text-slate-400 hover:text-white text-sm flex items-center gap-1"
                 >
@@ -1399,6 +1580,9 @@ export default function Home() {
                       setParsedData(null);
                       setResumeFile(null);
                       setResumeText("");
+                      setSelectedLocation(null);
+                      setShowLocationSelector(false);
+                      setViewingJob(null);
                     }}
                     className="text-slate-400 hover:text-white text-sm flex items-center gap-1"
                   >
